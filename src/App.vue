@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Piece from './components/Piece.vue';
+
 const NUMBER_OF_CELLS = 64
 
 const numberChecker = (num: number) => {
@@ -13,28 +15,23 @@ const numberChecker = (num: number) => {
 
 <template>
   <div class="board">
-    <div
-      v-for="num in NUMBER_OF_CELLS"
-      :key="num"
-      class="cell"
-      :class="{
-        'cell--green': numberChecker(num - 1),
-        'cell--white': !numberChecker(num - 1)
-      }"
-    >
-    <div class="test">
-
-    </div>
+    <div v-for="num in NUMBER_OF_CELLS" :key="num" class="cell" :class="{
+      'cell--green': numberChecker(num - 1),
+      'cell--white': !numberChecker(num - 1)
+    }">
+      <div class="piece">
+        <Piece name="king" color="w" />
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.test {
-  width: 20px;
-  height: 20px;
-  background-color: red;
+.piece {
+  width: 80px;
+  height: 80px;
 }
+
 .board {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
@@ -59,5 +56,4 @@ const numberChecker = (num: number) => {
 .cell--green {
   background-color: teal;
 }
-
 </style>

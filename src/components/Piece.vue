@@ -21,7 +21,6 @@ const piecesMap: Dict = {
     queen: Queen,
     rook: Rook
 }
-
 </script>
 
 <template>

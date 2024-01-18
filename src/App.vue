@@ -11,6 +11,43 @@ const numberChecker = (num: number) => {
   return (num % 2) === 1
 }
 
+// todo typing
+const pieces = [
+  {
+    name: 'king',
+    color: 'b',
+    position: {
+      x: 7,
+      y: 0
+    }
+  }
+]
+
+interface Coordinates {
+  x: number,
+  y: number
+}
+
+const rowInCoordinatesConverter = (num: number): Coordinates => {
+  const preX = num % 8
+  const coordX = (preX === 0 ? 8 : preX) - 1
+  const preY = Math.floor(num / 8)
+  const coordY = preX === 0 ? preY - 1 : preY
+  return {
+    x: coordX,
+    y: coordY
+  }
+}
+
+const existanceChecker = (num: number): any => {
+  console.log('called on number: ', num)
+  const position: Coordinates = rowInCoordinatesConverter(num)
+  const piece = pieces.find((piece) => {
+    return piece.position.x === position.x && piece.position.y === position.y
+  })
+  return piece
+}
+
 </script>
 
 <template>
@@ -20,7 +57,7 @@ const numberChecker = (num: number) => {
       'cell--white': !numberChecker(num - 1)
     }">
       <div class="piece">
-        <Piece name="king" color="w" />
+        <Piece v-if="existanceChecker(num)" :name="existanceChecker(num).name" :color="existanceChecker(num).color" />
       </div>
     </div>
   </div>

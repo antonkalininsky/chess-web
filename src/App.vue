@@ -1,7 +1,22 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import Piece from './components/Piece.vue';
 
+interface Coordinates {
+  x: number,
+  y: number
+}
+
+const clickPosition = ref<Coordinates>({
+  x: 0,
+  y: 0
+})
+
+let clickNumber: number = 0
+
 const NUMBER_OF_CELLS = 64
+
+let clickStatus: string = 'empty'
 
 const numberChecker = (num: number) => {
   const offset: number = Math.floor(num / 8) % 2
@@ -11,8 +26,8 @@ const numberChecker = (num: number) => {
   return (num % 2) === 1
 }
 
-// todo typing
-const pieces = [
+// todo - typing and reactivity
+const pieces = ref([
   {
     name: 'king',
     color: 'b',
@@ -21,12 +36,8 @@ const pieces = [
       y: 0
     }
   }
-]
+])
 
-interface Coordinates {
-  x: number,
-  y: number
-}
 
 const rowInCoordinatesConverter = (num: number): Coordinates => {
   const preX = num % 8
@@ -39,13 +50,31 @@ const rowInCoordinatesConverter = (num: number): Coordinates => {
   }
 }
 
+// todo - typing
 const existanceChecker = (num: number): any => {
-  console.log('called on number: ', num)
   const position: Coordinates = rowInCoordinatesConverter(num)
-  const piece = pieces.find((piece) => {
+  const piece = pieces.value.find((piece) => {
     return piece.position.x === position.x && piece.position.y === position.y
   })
   return piece
+}
+
+const handleTileClick = (num: number): void => {
+  const piece = existanceChecker(num)
+  if (piece) {
+    // update start coordinates
+    clickNumber = num
+    clickStatus = 'figure'
+  } else {
+    if (clickStatus === 'figure') {
+      // move
+      const targetPiece = existanceChecker(clickNumber)
+      const newPosition = rowInCoordinatesConverter(num)
+      targetPiece.position.x = newPosition.x
+      targetPiece.position.y = newPosition.y
+    }
+    clickStatus = 'empty'
+  }
 }
 
 </script>
@@ -56,7 +85,7 @@ const existanceChecker = (num: number): any => {
       'cell--green': numberChecker(num - 1),
       'cell--white': !numberChecker(num - 1)
     }">
-      <div class="piece">
+      <div class="piece" @click="handleTileClick(num)">
         <Piece v-if="existanceChecker(num)" :name="existanceChecker(num).name" :color="existanceChecker(num).color" />
       </div>
     </div>

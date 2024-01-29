@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import Piece from './components/Piece.vue';
-
-interface Coordinates {
-  x: number,
-  y: number
-}
+import PieceImage from './components/Piece.vue';
+import type { Coordinates, Piece } from "@/types/types"
 
 const clickPosition = ref<Coordinates>({
   x: 0,
@@ -26,8 +22,7 @@ const numberChecker = (num: number) => {
   return (num % 2) === 1
 }
 
-// todo - typing and reactivity
-const pieces = ref([
+const pieces = ref<Piece[]>([
   {
     name: 'king',
     color: 'b',
@@ -41,12 +36,12 @@ const pieces = ref([
 
 const rowInCoordinatesConverter = (num: number): Coordinates => {
   const preX = num % 8
-  const coordX = (preX === 0 ? 8 : preX) - 1
+  const x = (preX === 0 ? 8 : preX) - 1
   const preY = Math.floor(num / 8)
-  const coordY = preX === 0 ? preY - 1 : preY
+  const y = preX === 0 ? preY - 1 : preY
   return {
-    x: coordX,
-    y: coordY
+    x,
+    y
   }
 }
 
@@ -86,7 +81,8 @@ const handleTileClick = (num: number): void => {
       'cell--white': !numberChecker(num - 1)
     }">
       <div class="piece" @click="handleTileClick(num)">
-        <Piece v-if="existanceChecker(num)" :name="existanceChecker(num).name" :color="existanceChecker(num).color" />
+        <PieceImage v-if="existanceChecker(num)" :name="existanceChecker(num).name"
+          :color="existanceChecker(num).color" />
       </div>
     </div>
   </div>

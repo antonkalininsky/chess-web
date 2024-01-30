@@ -1,11 +1,54 @@
 import type { Coordinates, Piece, Directions } from "@/types/types"
 
-class RulesChecker {
+const initPieces: Piece[] = [
+    {
+        name: 'queen',
+        color: 'b',
+        position: {
+            x: 7,
+            y: 0
+        }
+    },
+    {
+        name: 'king',
+        color: 'b',
+        position: {
+            x: 3,
+            y: 0
+        }
+    },
+    {
+        name: 'king',
+        color: '2',
+        position: {
+            x: 0,
+            y: 7
+        }
+    }
+]
+
+class Game {
+    // variables
+    pieces: Piece[] = []
+    prevPosition: Coordinates | null = null
+    status: string | null = null
+
     constructor() {
+    }
+
+    initGame() {
+        this.pieces = initPieces
+    }
+
+    input(pos: Coordinates) {
 
     }
 
-    getPossibleMoves(piece: Piece) {
+    existanceChecker(pos: Coordinates): Piece | undefined {
+        return this.pieces.find(piece => piece.position.x === pos.x && piece.position.y === pos.y)
+    }
+
+    getPossibleMoves(piece: Piece): Coordinates[] {
         const directionsBishop: Directions = {
             'se': {
                 x: 1,
@@ -88,7 +131,7 @@ class RulesChecker {
         switch (piece.name) {
             case 'king':
                 Object.keys(directionsQueen).forEach(key => {
-                    if (borderCheck({
+                    if (!borderCheck({
                         x: piece.position.x + directionsQueen[key].x,
                         y: piece.position.y + directionsQueen[key].y
                     })) {
@@ -116,7 +159,7 @@ class RulesChecker {
                 break
             case 'knight':
                 Object.keys(directionsKnight).forEach(key => {
-                    if (borderCheck({
+                    if (!borderCheck({
                         x: piece.position.x + directionsKnight[key].x,
                         y: piece.position.y + directionsKnight[key].y
                     })) {
@@ -163,7 +206,8 @@ class RulesChecker {
             default:
                 throw new Error('unknown chess piece')
         }
-        console.log(result)
         return result
     }
 }
+
+export { Game }

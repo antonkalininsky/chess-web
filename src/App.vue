@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import PieceImage from './components/Piece.vue';
 import type { Coordinates, Piece } from "@/types/types"
+import { Game } from './model/Game';
 
-const clickPosition = ref<Coordinates>({
-  x: 0,
-  y: 0
-})
+const game = new Game()
+
+const possibleMoves = ref<Coordinates[]>([])
 
 let clickNumber: number = 0
 
-const NUMBER_OF_CELLS = 64
+const NUMBER_OF_CELLS: number = 64
 
 let clickStatus: string = 'empty'
 
@@ -22,9 +22,16 @@ const numberChecker = (num: number) => {
   return (num % 2) === 1
 }
 
+const piecesTest = computed(() => game.pieces)
+
+onMounted(() => {
+  game.initGame()
+})
+
+
 const pieces = ref<Piece[]>([
   {
-    name: 'king',
+    name: 'queen',
     color: 'b',
     position: {
       x: 7,
@@ -32,7 +39,6 @@ const pieces = ref<Piece[]>([
     }
   }
 ])
-
 
 const rowInCoordinatesConverter = (num: number): Coordinates => {
   const preX = num % 8
@@ -54,12 +60,21 @@ const existanceChecker = (num: number): any => {
   return piece
 }
 
+const possibleMovesChecker = (num: number): any => {
+  const position: Coordinates = rowInCoordinatesConverter(num)
+  const move = possibleMoves.value.find((move) => {
+    return move.x === position.x && move.y === position.y
+  })
+  return move
+}
+
 const handleTileClick = (num: number): void => {
   const piece = existanceChecker(num)
   if (piece) {
     // update start coordinates
     clickNumber = num
     clickStatus = 'figure'
+    possibleMoves.value = game.getPossibleMoves(piece)
   } else {
     if (clickStatus === 'figure') {
       // move
@@ -78,7 +93,8 @@ const handleTileClick = (num: number): void => {
   <div class="board">
     <div v-for="num in NUMBER_OF_CELLS" :key="num" class="cell" :class="{
       'cell--green': numberChecker(num - 1),
-      'cell--white': !numberChecker(num - 1)
+      'cell--white': !numberChecker(num - 1),
+      'cell--possible': possibleMovesChecker(num)
     }">
       <div class="piece" @click="handleTileClick(num)">
         <PieceImage v-if="existanceChecker(num)" :name="existanceChecker(num).name"
@@ -118,4 +134,9 @@ const handleTileClick = (num: number): void => {
 .cell--green {
   background-color: teal;
 }
+
+.cell--possible {
+  border: 3px solid red;
+}
 </style>
+./model/Game

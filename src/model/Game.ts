@@ -1,37 +1,19 @@
 import type { Coordinates, Piece, Directions } from "@/types/types";
-import { ref } from 'vue'
-
-const initPieces: Piece[] = [
-  {
-    name: "queen",
-    color: "b",
-    position: {
-      x: 7,
-      y: 0,
-    },
-  },
-  {
-    name: "king",
-    color: "b",
-    position: {
-      x: 3,
-      y: 0,
-    },
-  },
-  {
-    name: "king",
-    color: "2",
-    position: {
-      x: 0,
-      y: 7,
-    },
-  },
-];
+import {
+  directionsBishop,
+  directionsKnight,
+  directionsRook,
+  directionsQueen,
+} from "./utils/directionsPieces";
+import { initPieces } from "./utils/initPieces";
+import { ref } from "vue";
 
 class Game {
-	// consts
-	NUMBER_OF_CELLS: number = 8;
-	NUMBER_OF_ROWS: number = 8;
+
+  // consts
+  NUMBER_OF_CELLS: number = 8;
+  NUMBER_OF_ROWS: number = 8;
+
   // variables
   pieces: Piece[] = [];
   status: string | null = null;
@@ -40,25 +22,25 @@ class Game {
 
   constructor() {}
 
-	getBoardSizes() {
-		return {
-			sizeX: this.NUMBER_OF_CELLS,
-			sizeY: this.NUMBER_OF_ROWS
-		}
-	}
+  getBoardSizes() {
+    return {
+      sizeX: this.NUMBER_OF_CELLS,
+      sizeY: this.NUMBER_OF_ROWS,
+    };
+  }
 
-	getCurrentPosition() {
-		return this.currentPosition
-	}
+  getCurrentPosition() {
+    return this.currentPosition;
+  }
 
   initGame() {
     this.pieces = initPieces;
   }
 
   input(pos: Coordinates) {
-		this.previousPosition = this.currentPosition.value
-		this.currentPosition.value = pos
-	}
+    this.previousPosition = this.currentPosition.value;
+    this.currentPosition.value = pos;
+  }
 
   existanceChecker(pos: Coordinates): Piece | undefined {
     return this.pieces.find(
@@ -67,84 +49,6 @@ class Game {
   }
 
   getPossibleMoves(piece: Piece): Coordinates[] {
-    const directionsBishop: Directions = {
-      se: {
-        x: 1,
-        y: 1,
-      },
-      sw: {
-        x: -1,
-        y: 1,
-      },
-      nw: {
-        x: -1,
-        y: -1,
-      },
-      ne: {
-        x: 1,
-        y: -1,
-      },
-    };
-
-    const directionsKnight: Directions = {
-      sse: {
-        x: 1,
-        y: 2,
-      },
-      ssw: {
-        x: -1,
-        y: 2,
-      },
-      nnw: {
-        x: -1,
-        y: -2,
-      },
-      nne: {
-        x: 1,
-        y: -2,
-      },
-      nww: {
-        x: -2,
-        y: -1,
-      },
-      sww: {
-        x: -2,
-        y: 1,
-      },
-      nee: {
-        x: 2,
-        y: -1,
-      },
-      see: {
-        x: 2,
-        y: 1,
-      },
-    };
-
-    const directionsRook: Directions = {
-      s: {
-        x: 0,
-        y: 1,
-      },
-      e: {
-        x: 1,
-        y: 0,
-      },
-      n: {
-        x: 0,
-        y: -1,
-      },
-      w: {
-        x: -1,
-        y: 0,
-      },
-    };
-
-    const directionsQueen: Directions = {
-      ...directionsBishop,
-      ...directionsRook,
-    };
-
     const borderCheck = (pos: Coordinates) => {
       return pos.x > 7 || pos.x < 0 || pos.y > 7 || pos.y < 0;
     };

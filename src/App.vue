@@ -8,6 +8,10 @@ const game = new Game()
 
 const boardSize = ref<Coordinates | null>(null)
 
+const currentPosition = computed(() => {
+  return game.getCurrentPosition()
+})
+
 onMounted(() => {
   const { sizeX, sizeY } = game.getBoardSizes()
   boardSize.value = {
@@ -21,12 +25,13 @@ const cellColorator = (coord: Coordinates) => {
   return (coord.x % 2) === ((coord.y % 2) === 0 ? 0 : 1)
 }
 
-const pieces = ref<Piece[]>([])
-
-const handleTileClick = (x: number, y: number): void => {
-  console.log(x, y)
+const cellCursorCheck = (x: number, y: number) => {
+  return x === currentPosition.value.value?.x && y === currentPosition.value.value?.y
 }
 
+const handleTileClick = (x: number, y: number): void => {
+  game.input({x, y})
+}
 </script>
 
 <template>
@@ -44,7 +49,10 @@ const handleTileClick = (x: number, y: number): void => {
         :key="coordX"
         @click="handleTileClick(coordX, coordY)"
         class="cell"
-        :class="{ 'cell--green' : cellColorator({x: coordX, y: coordY}) }"
+        :class="{
+          'cursor' : cellCursorCheck(coordX, coordY),
+          'cell--green' : cellColorator({x: coordX, y: coordY})
+        }"
       >
       </div>
     </div>
@@ -89,6 +97,10 @@ const handleTileClick = (x: number, y: number): void => {
 }
 
 .cell--possible {
+  border: 3px solid red;
+}
+
+.cursor {
   border: 3px solid red;
 }
 </style>

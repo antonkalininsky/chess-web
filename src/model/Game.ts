@@ -1,4 +1,5 @@
 import type { Coordinates, Piece, Directions } from "@/types/types";
+import { ref } from 'vue'
 
 const initPieces: Piece[] = [
   {
@@ -35,7 +36,7 @@ class Game {
   pieces: Piece[] = [];
   status: string | null = null;
   previousPosition: Coordinates | null = null;
-  currentPosition: Coordinates | null = null;
+  currentPosition = ref<Coordinates | null>(null);
 
   constructor() {}
 
@@ -46,11 +47,18 @@ class Game {
 		}
 	}
 
+	getCurrentPosition() {
+		return this.currentPosition
+	}
+
   initGame() {
     this.pieces = initPieces;
   }
 
-  input(pos: Coordinates) {}
+  input(pos: Coordinates) {
+		this.previousPosition = this.currentPosition.value
+		this.currentPosition.value = pos
+	}
 
   existanceChecker(pos: Coordinates): Piece | undefined {
     return this.pieces.find(

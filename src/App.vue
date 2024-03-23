@@ -6,97 +6,43 @@ import { Game } from './model/Game';
 
 const game = new Game()
 
-const possibleMoves = ref<Coordinates[]>([])
+const boardSize = ref<Coordinates | null>(null)
 
-let clickNumber: number = 0
-
-const NUMBER_OF_CELLS: number = 8
-const NUMBER_OF_ROWS: number = 8
-
-let clickStatus: string = 'empty'
-
-const numberChecker = (num: number) => {
-  const offset: number = Math.floor(num / 8) % 2
-  if (offset === 1) {
-    return (num % 2) === 0
+onMounted(() => {
+  const { sizeX, sizeY } = game.getBoardSizes()
+  boardSize.value = {
+    x: sizeX,
+    y: sizeY
   }
-  return (num % 2) === 1
-}
+  // game.initGame()
+})
 
 const cellColorator = (coord: Coordinates) => {
   return (coord.x % 2) === ((coord.y % 2) === 0 ? 0 : 1)
 }
 
-const piecesTest = computed(() => game.pieces)
-
-onMounted(() => {
-  // game.initGame()
-})
-
-
 const pieces = ref<Piece[]>([])
 
-const rowInCoordinatesConverter = (num: number): Coordinates => {
-  const preX = num % 8
-  const x = (preX === 0 ? 8 : preX) - 1
-  const preY = Math.floor(num / 8)
-  const y = preX === 0 ? preY - 1 : preY
-  return {
-    x,
-    y
-  }
-}
-
-// todo - typing
-const existanceChecker = (num: number): any => {
-  const position: Coordinates = rowInCoordinatesConverter(num)
-  const piece = pieces.value.find((piece) => {
-    return piece.position.x === position.x && piece.position.y === position.y
-  })
-  return piece
-}
-
-const possibleMovesChecker = (num: number): any => {
-  const position: Coordinates = rowInCoordinatesConverter(num)
-  const move = possibleMoves.value.find((move) => {
-    return move.x === position.x && move.y === position.y
-  })
-  return move
-}
-
-const handleTileClick = (num: number): void => {
-  const {x, y} = rowInCoordinatesConverter(num)
-
-  // const piece = existanceChecker(num)
-  // if (piece) {
-  //   // update start coordinates
-  //   clickNumber = num
-  //   clickStatus = 'figure'
-  //   possibleMoves.value = game.getPossibleMoves(piece)
-  // } else {
-  //   if (clickStatus === 'figure') {
-  //     // move
-  //     const targetPiece = existanceChecker(clickNumber)
-  //     const newPosition = rowInCoordinatesConverter(num)
-  //     targetPiece.position.x = newPosition.x
-  //     targetPiece.position.y = newPosition.y
-  //   }
-  //   clickStatus = 'empty'
-  // }
+const handleTileClick = (x: number, y: number): void => {
+  console.log(x, y)
 }
 
 </script>
 
 <template>
-  <div class="board">
+  <div
+    v-if="boardSize"
+    class="board"
+  >
     <div
-      v-for="coordY in NUMBER_OF_ROWS"
+      v-for="coordY in boardSize.y"
       :key="coordY"
       class="board--row"
     >
       <div
-        v-for="coordX in NUMBER_OF_CELLS"
+        v-for="coordX in boardSize.x"
         :key="coordX"
+        @click="handleTileClick(coordX, coordY)"
         class="cell"
         :class="{ 'cell--green' : cellColorator({x: coordX, y: coordY}) }"
       >

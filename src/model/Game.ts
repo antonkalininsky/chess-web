@@ -41,7 +41,7 @@ class Game {
     }
 
     input(pos: Coordinates) {
-
+        
     }
 
     existanceChecker(pos: Coordinates): Piece | undefined {

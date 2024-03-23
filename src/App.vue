@@ -10,7 +10,8 @@ const possibleMoves = ref<Coordinates[]>([])
 
 let clickNumber: number = 0
 
-const NUMBER_OF_CELLS: number = 64
+const NUMBER_OF_CELLS: number = 8
+const NUMBER_OF_ROWS: number = 8
 
 let clickStatus: string = 'empty'
 
@@ -22,23 +23,18 @@ const numberChecker = (num: number) => {
   return (num % 2) === 1
 }
 
+const cellColorator = (coord: Coordinates) => {
+  return (coord.x % 2) === ((coord.y % 2) === 0 ? 0 : 1)
+}
+
 const piecesTest = computed(() => game.pieces)
 
 onMounted(() => {
-  game.initGame()
+  // game.initGame()
 })
 
 
-const pieces = ref<Piece[]>([
-  {
-    name: 'queen',
-    color: 'b',
-    position: {
-      x: 7,
-      y: 0
-    }
-  }
-])
+const pieces = ref<Piece[]>([])
 
 const rowInCoordinatesConverter = (num: number): Coordinates => {
   const preX = num % 8
@@ -69,36 +65,41 @@ const possibleMovesChecker = (num: number): any => {
 }
 
 const handleTileClick = (num: number): void => {
-  const piece = existanceChecker(num)
-  if (piece) {
-    // update start coordinates
-    clickNumber = num
-    clickStatus = 'figure'
-    possibleMoves.value = game.getPossibleMoves(piece)
-  } else {
-    if (clickStatus === 'figure') {
-      // move
-      const targetPiece = existanceChecker(clickNumber)
-      const newPosition = rowInCoordinatesConverter(num)
-      targetPiece.position.x = newPosition.x
-      targetPiece.position.y = newPosition.y
-    }
-    clickStatus = 'empty'
-  }
+  const {x, y} = rowInCoordinatesConverter(num)
+
+  // const piece = existanceChecker(num)
+  // if (piece) {
+  //   // update start coordinates
+  //   clickNumber = num
+  //   clickStatus = 'figure'
+  //   possibleMoves.value = game.getPossibleMoves(piece)
+  // } else {
+  //   if (clickStatus === 'figure') {
+  //     // move
+  //     const targetPiece = existanceChecker(clickNumber)
+  //     const newPosition = rowInCoordinatesConverter(num)
+  //     targetPiece.position.x = newPosition.x
+  //     targetPiece.position.y = newPosition.y
+  //   }
+  //   clickStatus = 'empty'
+  // }
 }
 
 </script>
 
 <template>
   <div class="board">
-    <div v-for="num in NUMBER_OF_CELLS" :key="num" class="cell" :class="{
-      'cell--green': numberChecker(num - 1),
-      'cell--white': !numberChecker(num - 1),
-      'cell--possible': possibleMovesChecker(num)
-    }">
-      <div class="piece" @click="handleTileClick(num)">
-        <PieceImage v-if="existanceChecker(num)" :name="existanceChecker(num).name"
-          :color="existanceChecker(num).color" />
+    <div
+      v-for="coordY in NUMBER_OF_ROWS"
+      :key="coordY"
+      class="board--row"
+    >
+      <div
+        v-for="coordX in NUMBER_OF_CELLS"
+        :key="coordX"
+        class="cell"
+        :class="{ 'cell--green' : cellColorator({x: coordX, y: coordY}) }"
+      >
       </div>
     </div>
   </div>
@@ -112,8 +113,12 @@ const handleTileClick = (num: number): void => {
 
 .board {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
+}
+
+.board--row {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
 }
 
 .cell {
@@ -125,6 +130,8 @@ const handleTileClick = (num: number): void => {
   justify-items: center;
   align-items: center;
   vertical-align: center;
+
+  background-color: lightgray;
 }
 
 .cell--white {
@@ -139,4 +146,3 @@ const handleTileClick = (num: number): void => {
   border: 3px solid red;
 }
 </style>
-./model/Game

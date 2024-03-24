@@ -49,6 +49,20 @@ class Game {
   input(pos: Coordinates) {
     this.previousPosition = this.currentPosition.value;
     this.currentPosition.value = pos;
+    if (this.previousPosition && this.currentPosition.value) {
+      this.handleMovement()
+    }
+  }
+
+  handleMovement() {
+    const piece1 = this.getPieceByCoordinates(this.previousPosition!.x, this.previousPosition!.y)
+    const piece2 = this.getPieceByCoordinates(this.currentPosition.value!.x, this.currentPosition.value!.y)
+    if (piece1 && !piece2) {
+      piece1.position.x = this.currentPosition.value!.x
+      piece1.position.y = this.currentPosition.value!.y
+      this.previousPosition = null
+      this.currentPosition.value = null
+    }
   }
 
   existanceChecker(pos: Coordinates): Piece | undefined {

@@ -1,16 +1,25 @@
 interface Coordinates {
-    x: number,
-    y: number
+  x: number;
+  y: number;
 }
 
 interface Piece {
-    name: string,
-    color: string,
-    position: Coordinates
+  name: string;
+  color: string;
+  position: Coordinates;
 }
 
 interface Directions {
-    [key: string]: Coordinates
+  [key: string]: Coordinates;
 }
 
-export type { Coordinates, Piece, Directions }
+interface Movements {
+  directions: Directions;
+  isContinuous: Boolean;
+}
+
+interface MovementsMap {
+    [key: string]: Movements
+}
+
+export type { Coordinates, Piece, Directions, Movements, MovementsMap };

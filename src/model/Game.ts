@@ -1,10 +1,5 @@
 import type { Coordinates, Piece, Directions } from "@/types/types";
-import {
-  directionsBishop,
-  directionsKnight,
-  directionsRook,
-  directionsQueen,
-} from "./utils/directionsPieces";
+import { allMovements } from "./utils/movementsPieces";
 import { initPieces } from "./utils/initPieces";
 import { ref } from "vue";
 
@@ -18,6 +13,7 @@ class Game {
   status: string | null = null;
   previousPosition: Coordinates | null = null;
   currentPosition = ref<Coordinates | null>(null);
+  possibleMoves = ref<Coordinates[]>([]);
 
   constructor() {}
 
@@ -28,144 +24,94 @@ class Game {
     };
   }
 
-  getCurrentPosition() {
+  getPossibleMoves(): Coordinates[] {
+    return this.possibleMoves.value;
+  }
+
+  getCurrentPosition(): Coordinates | null {
     return this.currentPosition.value;
   }
 
-  getAllPieces() {
+  getAllPieces(): Piece[] {
     return this.pieces.value;
   }
 
-  getPieceByCoordinates(x: number, y: number) {
+  getPieceByCoordinates(x: number, y: number): Piece | undefined {
     return this.pieces.value.find(
       (piece) => piece.position.x === x && piece.position.y === y
     );
   }
 
-  initGame() {
+  initGame(): void {
     this.pieces.value = initPieces;
   }
 
-  input(pos: Coordinates) {
+  input(pos: Coordinates): void {
     this.previousPosition = this.currentPosition.value;
     this.currentPosition.value = pos;
+    if (this.currentPosition.value) {
+      this.calculatePossibleMoves()
+    }
     if (this.previousPosition && this.currentPosition.value) {
-      this.handleMovement()
+      this.handleMovement();
     }
   }
 
-  handleMovement() {
-    const piece1 = this.getPieceByCoordinates(this.previousPosition!.x, this.previousPosition!.y)
-    const piece2 = this.getPieceByCoordinates(this.currentPosition.value!.x, this.currentPosition.value!.y)
+  handleMovement(): void {
+    const piece1 = this.getPieceByCoordinates(
+      this.previousPosition!.x,
+      this.previousPosition!.y
+    );
+    const piece2 = this.getPieceByCoordinates(
+      this.currentPosition.value!.x,
+      this.currentPosition.value!.y
+    );
     if (piece1 && !piece2) {
-      piece1.position.x = this.currentPosition.value!.x
-      piece1.position.y = this.currentPosition.value!.y
-      this.previousPosition = null
-      this.currentPosition.value = null
+      // accept movement
+      piece1.position.x = this.currentPosition.value!.x;
+      piece1.position.y = this.currentPosition.value!.y;
+      this.previousPosition = null;
+      this.currentPosition.value = null;
     }
   }
 
-  existanceChecker(pos: Coordinates): Piece | undefined {
-    return undefined
-    // return this.pieces.find(
-    //   (piece) => piece.position.x === pos.x && piece.position.y === pos.y
-    // );
-  }
-
-  getPossibleMoves(piece: Piece): Coordinates[] {
-    const borderCheck = (pos: Coordinates) => {
-      return pos.x > 7 || pos.x < 0 || pos.y > 7 || pos.y < 0;
+  calculatePossibleMoves(): void {
+    const borderCheck = (pos: Coordinates): boolean => {
+      return pos.x > 8 || pos.x < 1 || pos.y > 8 || pos.y < 1;
     };
-    const result: Coordinates[] = [];
-    switch (piece.name) {
-      case "king":
-        Object.keys(directionsQueen).forEach((key) => {
-          if (
-            !borderCheck({
-              x: piece.position.x + directionsQueen[key].x,
-              y: piece.position.y + directionsQueen[key].y,
-            })
-          ) {
-            result.push({
-              x: piece.position.x + directionsQueen[key].x,
-              y: piece.position.y + directionsQueen[key].y,
-            });
-          }
-        });
-        break;
-      case "bishop":
-        Object.keys(directionsBishop).forEach((key) => {
-          let counter = 1;
-          while (
-            !borderCheck({
-              x: piece.position.x + directionsBishop[key].x * counter,
-              y: piece.position.y + directionsBishop[key].y * counter,
-            })
-          ) {
-            result.push({
-              x: piece.position.x + directionsBishop[key].x * counter,
-              y: piece.position.y + directionsBishop[key].y * counter,
-            });
-            counter++;
-          }
-        });
-        break;
-      case "knight":
-        Object.keys(directionsKnight).forEach((key) => {
-          if (
-            !borderCheck({
-              x: piece.position.x + directionsKnight[key].x,
-              y: piece.position.y + directionsKnight[key].y,
-            })
-          ) {
-            result.push({
-              x: piece.position.x + directionsKnight[key].x,
-              y: piece.position.y + directionsKnight[key].y,
-            });
-          }
-        });
-        break;
-      case "pawn":
-        console.log("todo");
-        break;
-      case "rook":
-        Object.keys(directionsRook).forEach((key) => {
-          let counter = 1;
-          while (
-            !borderCheck({
-              x: piece.position.x + directionsRook[key].x * counter,
-              y: piece.position.y + directionsRook[key].y * counter,
-            })
-          ) {
-            result.push({
-              x: piece.position.x + directionsRook[key].x * counter,
-              y: piece.position.y + directionsRook[key].y * counter,
-            });
-            counter++;
-          }
-        });
-        break;
-      case "queen":
-        Object.keys(directionsQueen).forEach((key) => {
-          let counter = 1;
-          while (
-            !borderCheck({
-              x: piece.position.x + directionsQueen[key].x * counter,
-              y: piece.position.y + directionsQueen[key].y * counter,
-            })
-          ) {
-            result.push({
-              x: piece.position.x + directionsQueen[key].x * counter,
-              y: piece.position.y + directionsQueen[key].y * counter,
-            });
-            counter++;
-          }
-        });
-        break;
-      default:
-        throw new Error("unknown chess piece");
+    const piece: Piece | undefined = this.getPieceByCoordinates(
+      this.currentPosition.value!.x,
+      this.currentPosition.value!.y
+    );
+    if (!piece) {
+      this.possibleMoves.value = [];
+      return;
     }
-    return result;
+    if (piece.name === "pawn") {
+      console.log("todo");
+      this.possibleMoves.value = [];
+      return;
+    }
+    if (!(piece.name in allMovements)) {
+      throw Error("unknown chess piece!");
+    }
+    const result: Coordinates[] = [];
+    const currentDirections = allMovements[piece.name].directions;
+    const isContinuous = allMovements[piece.name].isContinuous;
+    Object.keys(currentDirections).forEach((key) => {
+      let counter: number = 1;
+      let isBlocked: boolean = false;
+      do {
+        const x = piece.position.x + currentDirections[key].x * counter;
+        const y = piece.position.y + currentDirections[key].y * counter;
+        const isBlocked = borderCheck({ x, y });
+        if (!isBlocked) {
+          result.push({ x, y });
+          counter++;
+        }
+      } while (isContinuous && isBlocked);
+    });
+    this.possibleMoves.value = result;
   }
 }
 

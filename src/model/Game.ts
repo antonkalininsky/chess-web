@@ -9,13 +9,12 @@ import { initPieces } from "./utils/initPieces";
 import { ref } from "vue";
 
 class Game {
-
   // consts
   NUMBER_OF_CELLS: number = 8;
   NUMBER_OF_ROWS: number = 8;
 
   // variables
-  pieces: Piece[] = [];
+  pieces = ref<Piece[]>([]);
   status: string | null = null;
   previousPosition: Coordinates | null = null;
   currentPosition = ref<Coordinates | null>(null);
@@ -30,11 +29,21 @@ class Game {
   }
 
   getCurrentPosition() {
-    return this.currentPosition;
+    return this.currentPosition.value;
+  }
+
+  getAllPieces() {
+    return this.pieces.value;
+  }
+
+  getPieceByCoordinates(x: number, y: number) {
+    return this.pieces.value.find(
+      (piece) => piece.position.x === x && piece.position.y === y
+    );
   }
 
   initGame() {
-    this.pieces = initPieces;
+    this.pieces.value = initPieces;
   }
 
   input(pos: Coordinates) {
@@ -43,9 +52,10 @@ class Game {
   }
 
   existanceChecker(pos: Coordinates): Piece | undefined {
-    return this.pieces.find(
-      (piece) => piece.position.x === pos.x && piece.position.y === pos.y
-    );
+    return undefined
+    // return this.pieces.find(
+    //   (piece) => piece.position.x === pos.x && piece.position.y === pos.y
+    // );
   }
 
   getPossibleMoves(piece: Piece): Coordinates[] {

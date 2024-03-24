@@ -12,25 +12,40 @@ const currentPosition = computed(() => {
   return game.getCurrentPosition()
 })
 
+const pieces = computed(() => {
+  return game.getAllPieces()
+})
+
 onMounted(() => {
   const { sizeX, sizeY } = game.getBoardSizes()
   boardSize.value = {
     x: sizeX,
     y: sizeY
   }
-  // game.initGame()
+  game.initGame()
 })
 
-const cellColorator = (coord: Coordinates) => {
-  return (coord.x % 2) === ((coord.y % 2) === 0 ? 0 : 1)
+const cellColorator = (x: number, y: number) => {
+  return (x % 2) === ((y % 2) === 0 ? 0 : 1)
 }
 
 const cellCursorCheck = (x: number, y: number) => {
-  return x === currentPosition.value.value?.x && y === currentPosition.value.value?.y
+  return x === currentPosition.value?.x && y === currentPosition.value?.y
 }
 
-const handleTileClick = (x: number, y: number): void => {
+const handleCellClick = (x: number, y: number): void => {
   game.input({x, y})
+}
+
+const pieceChecker = (x: number, y: number): object | null => {
+  const result = game.getPieceByCoordinates(x, y)
+  if (result) {
+    return {
+      name: result.name,
+      color: result.color
+    }
+  }
+  return null
 }
 </script>
 
@@ -47,13 +62,17 @@ const handleTileClick = (x: number, y: number): void => {
       <div
         v-for="coordX in boardSize.x"
         :key="coordX"
-        @click="handleTileClick(coordX, coordY)"
+        @click="handleCellClick(coordX, coordY)"
         class="cell"
         :class="{
           'cursor' : cellCursorCheck(coordX, coordY),
-          'cell--green' : cellColorator({x: coordX, y: coordY})
+          'cell--green' : cellColorator(coordX, coordY)
         }"
       >
+        <PieceImage
+          v-if="pieceChecker(coordX, coordY)"
+          v-bind="pieceChecker(coordX, coordY)"
+        />
       </div>
     </div>
   </div>

@@ -8,23 +8,23 @@ import RookPiece from '@/components/pieces/RookPiece.vue'
 import type { PiecesMap } from '@/types/types'
 
 const props = defineProps({
-    name: {
-      type: String,
-      default: 'king'
-    },
-    color: {
-      type: String,
-      default: 'w'
-    }
+  name: {
+    type: String,
+    default: 'king'
+  },
+  color: {
+    type: String,
+    default: 'w'
+  }
 })
 
 const piecesMap: PiecesMap = {
-    pawn: PawnPiece,
-    bishop: BishopPiece,
-    king: KingPiece,
-    knight: KnightPiece,
-    queen: QueenPiece,
-    rook: RookPiece
+  pawn: PawnPiece,
+  bishop: BishopPiece,
+  king: KingPiece,
+  knight: KnightPiece,
+  queen: QueenPiece,
+  rook: RookPiece
 }
 </script>
 

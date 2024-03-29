@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import PieceImage from './components/Piece.vue';
-import type { Coordinates, Piece } from "@/types/types"
+import PieceComponent from './components/PieceComponent.vue';
+import type { Coordinates } from "@/types/types"
 import { Game } from './model/Game';
 
 const game = new Game()
@@ -10,10 +10,6 @@ const boardSize = ref<Coordinates | null>(null)
 
 const currentPosition = computed(() => {
   return game.getCurrentPosition()
-})
-
-const pieces = computed(() => {
-  return game.getAllPieces()
 })
 
 onMounted(() => {
@@ -62,14 +58,14 @@ const pieceChecker = (x: number, y: number): object | null => {
       <div
         v-for="coordX in boardSize.x"
         :key="coordX"
-        @click="handleCellClick(coordX, coordY)"
         class="cell"
         :class="{
           'cursor' : cellCursorCheck(coordX, coordY),
           'cell--green' : cellColorator(coordX, coordY)
         }"
+        @click="handleCellClick(coordX, coordY)"
       >
-        <PieceImage
+        <PieceComponent
           v-if="pieceChecker(coordX, coordY)"
           v-bind="pieceChecker(coordX, coordY)"
         />

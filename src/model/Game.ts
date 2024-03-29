@@ -1,4 +1,4 @@
-import type { Coordinates, Piece, Directions } from "@/types/types";
+import type { Coordinates, Piece } from "@/types/types";
 import { allMovements } from "./utils/movementsPieces";
 import { initPieces } from "./utils/initPieces";
 import { ref } from "vue";
@@ -100,7 +100,7 @@ class Game {
     const isContinuous = allMovements[piece.name].isContinuous;
     Object.keys(currentDirections).forEach((key) => {
       let counter: number = 1;
-      let isBlocked: boolean = false;
+      const isBlocked: boolean = false;
       do {
         const x = piece.position.x + currentDirections[key].x * counter;
         const y = piece.position.y + currentDirections[key].y * counter;

@@ -1,3 +1,9 @@
+import PawnPiece from "@/components/pieces/PawnPiece.vue";
+
+interface PiecesMap {
+  [key: string]: typeof PawnPiece
+}
+
 interface Coordinates {
   x: number;
   y: number;
@@ -15,11 +21,11 @@ interface Directions {
 
 interface Movements {
   directions: Directions;
-  isContinuous: Boolean;
+  isContinuous: boolean;
 }
 
 interface MovementsMap {
     [key: string]: Movements
 }
 
-export type { Coordinates, Piece, Directions, Movements, MovementsMap };
+export type { Coordinates, Piece, Directions, Movements, MovementsMap, PiecesMap };

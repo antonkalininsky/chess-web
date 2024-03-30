@@ -13,6 +13,7 @@ const currentPosition = computed(() => {
 })
 
 onMounted(() => {
+  console.log('hello world')
   const { sizeX, sizeY } = game.getBoardSizes()
   boardSize.value = {
     x: sizeX,
